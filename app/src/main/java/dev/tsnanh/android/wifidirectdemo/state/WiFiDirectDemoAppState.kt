@@ -9,6 +9,8 @@ import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -29,11 +31,11 @@ class WiFiDirectDemoAppState(
     val wifiP2pManager: WifiP2pManager?,
     val channel: Channel,
 ) {
-    private val _devices = MutableStateFlow<List<WifiP2pDevice>>(emptyList())
-    val wifiDevices = _devices.asStateFlow()
+    private val _devices = mutableStateOf<WifiP2pDeviceList>(WifiP2pDeviceList())
+    val wifiDevices: State<WifiP2pDeviceList> = _devices
 
     fun updateDevices(devices: WifiP2pDeviceList) {
-        _devices.update { devices.deviceList.toList() }
+        _devices.value = devices
     }
 
     fun showSnackBar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) =
@@ -50,5 +52,11 @@ fun rememberWiFiDirectDemoAppState(
     wifiP2pManager: WifiP2pManager? = LocalContext.current.getSystemService(),
     channel: Channel,
 ) = remember(navHostController, coroutineScope, scaffoldState, channel) {
-    WiFiDirectDemoAppState(navHostController, coroutineScope, scaffoldState, wifiP2pManager, channel)
+    WiFiDirectDemoAppState(
+        navHostController,
+        coroutineScope,
+        scaffoldState,
+        wifiP2pManager,
+        channel
+    )
 }

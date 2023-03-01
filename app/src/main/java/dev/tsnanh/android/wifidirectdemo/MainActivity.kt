@@ -109,13 +109,13 @@ class MainActivity : ComponentActivity() {
                                         }
                                 }
                                 WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
-                                    val networkInfo =
-                                        intent.getParcelableExtra<NetworkInfo>(WifiP2pManager.EXTRA_NETWORK_INFO)
-                                    if (networkInfo != null && networkInfo.isConnected) {
-                                        Log.d(TAG, "Connected")
-                                    } else {
-                                        Log.d(TAG, "Disconnected")
-                                    }
+                                    // val networkInfo =
+                                    //     intent.getParcelableExtra<NetworkInfo>(WifiP2pManager.EXTRA_NETWORK_INFO)
+                                    // if (networkInfo != null && networkInfo.isConnected) {
+                                    //     Log.d(TAG, "Connected")
+                                    // } else {
+                                    //     Log.d(TAG, "Disconnected")
+                                    // }
                                 }
                                 WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                                     val device: WifiP2pDevice? =
@@ -127,6 +127,8 @@ class MainActivity : ComponentActivity() {
                                         } else {
                                             intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE)
                                         }
+                                    println(device?.deviceName + " dumami")
+                                    // appState.updateSingleDevice(device)
                                     Log.d(TAG, "Device name: " + device!!.deviceName)
                                     Log.d(TAG, "Device address: " + device.deviceAddress)
                                 }
@@ -139,7 +141,7 @@ class MainActivity : ComponentActivity() {
                         val connectivityManager = context.getSystemService<ConnectivityManager>()
                         val callback = object : NetworkCallback() {
                             override fun onAvailable(network: Network) {
-                                Log.d(TAG, network.toString())
+                                Log.d(TAG, network.toString() + "cccccccccccccccc")
                             }
                         }
                         connectivityManager?.registerDefaultNetworkCallback(callback)
