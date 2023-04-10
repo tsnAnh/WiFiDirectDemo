@@ -34,8 +34,15 @@ class WiFiDirectDemoAppState(
     private val _devices = mutableStateOf<WifiP2pDeviceList>(WifiP2pDeviceList())
     val wifiDevices: State<WifiP2pDeviceList> = _devices
 
+    private val _currentIpAddress = mutableStateOf<String?>(null)
+    val currentIpAddress: State<String?> = _currentIpAddress
+
     fun updateDevices(devices: WifiP2pDeviceList) {
         _devices.value = devices
+    }
+
+    fun updateIpAddress(ip: String) {
+        _currentIpAddress.value = ip
     }
 
     fun showSnackBar(message: String, duration: SnackbarDuration = SnackbarDuration.Short) =

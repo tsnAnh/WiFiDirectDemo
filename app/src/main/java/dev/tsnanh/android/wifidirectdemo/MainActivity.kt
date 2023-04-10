@@ -8,6 +8,7 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkInfo
 import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pInfo
 import android.net.wifi.p2p.WifiP2pManager
 import android.net.wifi.p2p.WifiP2pManager.Channel
 import android.os.Build
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel
 
         // Request the necessary permissions
         if (ActivityCompat.checkSelfPermission(
@@ -61,6 +63,17 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                1
+            )
+        }
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.NEARBY_WIFI_DEVICES
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.NEARBY_WIFI_DEVICES),
                 1
             )
         }
@@ -109,13 +122,15 @@ class MainActivity : ComponentActivity() {
                                         }
                                 }
                                 WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
-                                    // val networkInfo =
-                                    //     intent.getParcelableExtra<NetworkInfo>(WifiP2pManager.EXTRA_NETWORK_INFO)
-                                    // if (networkInfo != null && networkInfo.isConnected) {
-                                    //     Log.d(TAG, "Connected")
-                                    // } else {
-                                    //     Log.d(TAG, "Disconnected")
-                                    // }
+                                    val networkInfo =
+                                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+                                            intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO, WifiP2pInfo::class.java)
+                                        } else {
+                                            intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO)
+                                        } ?: return@SystemBroadcastReceiver
+                                    if (networkInfo.groupOwnerAddress == null) return@SystemBroadcastReceiver
+                                    Log.d(TAG, "onCreate: $networkInfo")
+                                    appState.updateIpAddress(networkInfo.groupOwnerAddress.hostAddress)
                                 }
                                 WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                                     val device: WifiP2pDevice? =
@@ -134,18 +149,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    }
-
-                    val context = LocalContext.current
-                    DisposableEffect(Unit) {
-                        val connectivityManager = context.getSystemService<ConnectivityManager>()
-                        val callback = object : NetworkCallback() {
-                            override fun onAvailable(network: Network) {
-                                Log.d(TAG, network.toString() + "cccccccccccccccc")
-                            }
-                        }
-                        connectivityManager?.registerDefaultNetworkCallback(callback)
-                        onDispose { connectivityManager?.unregisterNetworkCallback(callback) }
                     }
                 }
             }

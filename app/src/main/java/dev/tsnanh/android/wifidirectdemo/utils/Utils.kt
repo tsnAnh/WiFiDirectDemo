@@ -1,5 +1,8 @@
+@file:SuppressLint("MissingPermission")
+
 package dev.tsnanh.android.wifidirectdemo.utils
 
+import android.annotation.SuppressLint
 import android.net.wifi.p2p.WifiP2pConfig
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
